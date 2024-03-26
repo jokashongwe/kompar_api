@@ -8,6 +8,8 @@ module.exports = app => {
   
     // Retrieve all prices
     router.get("/", prices.findAll);
+
+    router.get("/filter", prices.findFiltered);
   
   
     // Retrieve a single Price with id

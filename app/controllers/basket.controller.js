@@ -1,6 +1,7 @@
 const db = require("../models");
 const Price = db.Price;
 const Product = db.Product;
+const Basket = db.Basket;
 
 // Create and Save a new Price
 exports.create = (req, res) => {
@@ -12,51 +13,52 @@ exports.create = (req, res) => {
   /**
    * Find the related products
    */
-  const { id } = req.body;
-  Product.findById(req.body.product)
-    .then((product) => {
-      if (!product) {
-        res.status(404).send({ message: "Not found Product with id " + id });
+  Product.find({ _id: req.body.products })
+    .then((products) => {
+      if (!products) {
+        res.status(404).send({ message: "Not found Product with IDS " });
       }
       // Create a Prices
-      let price = new Price({ ...req.body, product: product });
+      let basket = new Basket({ ...req.body, products: products });
 
       // Save Price in the database
-      Price.create(price)
+      Basket.create(price)
         .then((data) => {
           res.send(data);
         })
         .catch((err) => {
           res.status(500).send({
             message:
-              err.message || "Some error occurred while creating the Price.",
+              err.message || "Some error occurred while creating the Basket.",
           });
         });
     })
     .catch((error) => {
       res
         .status(500)
-        .send({ message: "Error retrieving Product with id=" + id });
+        .send({
+          message: error.message,
+        });
     });
 };
 
 // Retrieve all Prices from the database.
 exports.findAll = async (req, res) => {
   try {
-    const { page = 1, limit = 10, id, product } = req.query;
+    const { page = 1, limit = 10, id, products } = req.query;
 
-    const count = await Price.countDocuments();
-    let prices = [];
-    if (product) {
-      prices = await Price.find({ product }).sort({ createdAt: 1 });
+    const count = await Basket.countDocuments();
+    let baskets = [];
+    if (products) {
+        baskets = await Basket.find({ products }).sort({ createdAt: 1 });
     } else if (id) {
-      prices = await Price.findById(id);
+        baskets = await Basket.findById(id);
     } else {
-      prices = await Price.find({}).sort({ createdAt: -1 });
+        baskets = await Basket.find({}).sort({ createdAt: -1 });
     }
     res.set("Access-Control-Expose-Headers", "X-Total-Count");
-    res.set("X-Total-Count", prices.length);
-    res.status(200).json(prices);
+    res.set("X-Total-Count", baskets.length);
+    res.status(200).json(baskets);
   } catch (error) {
     res.status(500).send({
       message: error.message || "Some error occurred while retrieving Prices.",
@@ -68,10 +70,10 @@ exports.findAll = async (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  Price.findById(id)
+  Basket.findById(id)
     .then((data) => {
       if (!data)
-        res.status(404).send({ message: "Not found Price with id " + id });
+        res.status(404).send({ message: "Not found Basket with id " + id });
       else res.send(data);
     })
     .catch((err) => {
@@ -89,7 +91,7 @@ exports.update = (req, res) => {
 
   const id = req.params.id;
 
-  Price.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+  Basket.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
         res.status(404).send({
@@ -99,7 +101,7 @@ exports.update = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating Price with id=" + id,
+        message: err.message,
       });
     });
 };
@@ -108,7 +110,7 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
-  Price.findByIdAndRemove(id, { useFindAndModify: false })
+  Basket.findByIdAndRemove(id, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
         res.status(404).send({
@@ -122,14 +124,14 @@ exports.delete = (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Price with id=" + id,
+        message: err.message,
       });
     });
 };
 
 // Delete all Prices from the database.
 exports.deleteAll = (req, res) => {
-  Price.deleteMany({})
+ Basket.deleteMany({})
     .then((data) => {
       res.send({
         message: `${data.deletedCount} Prices were deleted successfully!`,
@@ -141,26 +143,4 @@ exports.deleteAll = (req, res) => {
           err.message || "Some error occurred while removing all Prices.",
       });
     });
-};
-
-exports.findFiltered = async (req, res) => {
-  try {
-    const { page = 1, limit = 10, name, query } = req.query;
-    var condition = {};
-    condition[name] = query;
-    const count = await Price.countDocuments();
-    const prices = await Price.find(condition)
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .sort({ createdAt: -1 });
-    res.status(200).json({
-      data: prices,
-      totalPages: Math.ceil(count / limit),
-      currentPage: page,
-    });
-  } catch (error) {
-    res.status(500).send({
-      message: error.message || "Some error occurred while retrieving Prices.",
-    });
-  }
 };

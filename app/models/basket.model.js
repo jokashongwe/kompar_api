@@ -1,14 +1,13 @@
 module.exports = mongoose => {
     var schema = mongoose.Schema(
       {
-        amount: Number,
-        location_name: String,
-        currency: String,
-        province: String,
-        ville: String,
+        name: String,
         commune: String,
-        user: String,
-        product: {type: mongoose.Types.ObjectId, ref: "products"}
+        ville: String,
+        province: String,
+        products: [String],
+        total: Number,
+        progress: Number
       },
       { timestamps: true }
     );
@@ -19,7 +18,7 @@ module.exports = mongoose => {
       return object;
     });
   
-    const Price = mongoose.model("prices", schema);
+    const Price = mongoose.model("baskets", schema);
     return Price;
   };
   

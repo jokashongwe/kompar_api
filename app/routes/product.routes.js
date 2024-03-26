@@ -12,6 +12,8 @@ module.exports = app => {
   
     // Retrieve a single Tutorial with id
     router.get("/:id", products.findOne);
+
+    router.get("/:id/prices", products.relatedPrices);
   
     // Update a Tutorial with id
     router.put("/:id", products.update);
