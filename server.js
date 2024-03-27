@@ -41,6 +41,11 @@ require("./app/routes/basket.routes")(app);
 require("./app/routes/dashboard.routes")(app);
 require("./app/routes/role.routes")(app);
 require("./app/routes/user.routes")(app);
+require("./app/routes/province.routes")(app);
+require("./app/routes/city.routes")(app);
+require("./app/routes/market.routes")(app);
+require("./app/routes/task.routes")(app);
+require("./app/routes/submission.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
