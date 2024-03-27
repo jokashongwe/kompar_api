@@ -4,6 +4,7 @@ module.exports = mongoose => {
         name: String,
         marque: String,
         model: String,
+        conteneur: String,
         progress: Number
       },
       { timestamps: true }

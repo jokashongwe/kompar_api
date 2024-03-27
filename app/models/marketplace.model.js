@@ -3,8 +3,7 @@ module.exports = mongoose => {
       {
         name: String,
         location: Object,
-        population: Number,
-        province: String,
+        province: {type: mongoose.Types.ObjectId, ref: "provinces"},
         ville: String,
         commune: String
       },

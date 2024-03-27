@@ -7,7 +7,16 @@ exports.create = (req, res) => {
   const { lat, lng } = req.body;
   delete req.body.lat;
   delete req.body.lng;
-  const city = new City({ ...req.body, location: { lat, lng } });
+  const communes = "" + req.body.communes;
+  let validCommunes = communes;
+  if (communes.includes(";")) {
+    validCommunes = communes.split(";");
+  }
+  const city = new City({
+    ...req.body,
+    location: { lat, lng },
+    communes: validCommunes,
+  });
 
   // Save Product in the database
   City.create(city)
