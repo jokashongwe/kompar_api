@@ -5,11 +5,6 @@ const Basket = db.Basket;
 
 // Create and Save a new Price
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.amount) {
-    res.status(400).send({ message: "amount can not be empty!" });
-    return;
-  }
   /**
    * Find the related products
    */
@@ -19,10 +14,10 @@ exports.create = (req, res) => {
         res.status(404).send({ message: "Not found Product with IDS " });
       }
       // Create a Prices
-      let basket = new Basket({ ...req.body, products: products });
+      let basket = new Basket({ ...req.body, products: req.body.products });
 
       // Save Price in the database
-      Basket.create(price)
+      Basket.create(basket)
         .then((data) => {
           res.send(data);
         })
